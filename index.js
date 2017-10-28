@@ -24,3 +24,32 @@ var Rx = require('rxjs/Rx');
         error: x => console.log('Oh ou')
     });
 })();
+
+(function subscribeCalledTwice() {
+    console.log('=> subscribeCalledTwice');
+
+    var observable = Rx.Observable.create(function(observer) {
+        console.log('A simple observable call.');
+    });
+
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+    observable.subscribe(function(x) {});
+
+    console.log('after!');
+    console.log('<= subscribeCalledTwice - end');
+})();
