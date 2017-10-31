@@ -25,8 +25,8 @@ var Rx = require('rxjs/Rx');
     });
 })();
 
-(function subscribeCalledTwice() {
-    console.log('=> subscribeCalledTwice');
+(function showSubscribeCalledTwice() {
+    console.log('=> showSubscribeCalledTwice');
 
     var observable = Rx.Observable.create(function(observer) {
         console.log('A simple observable call.');
@@ -52,4 +52,10 @@ var Rx = require('rxjs/Rx');
 
     console.log('after!');
     console.log('<= subscribeCalledTwice - end');
+})();
+
+(function showDisposableObservableExecution() {
+    var observable = Rx.Observable.interval(400);
+    var subscription = observable.subscribe(x => console.log(`observable ${x}`));
+    setTimeout(() => {subscription.unsubscribe()}, 2000);
 })();
