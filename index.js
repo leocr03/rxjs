@@ -59,3 +59,15 @@ var Rx = require('rxjs/Rx');
     var subscription = observable.subscribe(x => console.log(`observable ${x}`));
     setTimeout(() => {subscription.unsubscribe()}, 2000);
 })();
+
+(function showChildSubscription(){
+    var observable1 = Rx.Observable.interval(400);
+    var observable2 = Rx.Observable.interval(300);
+    var subscription1 = observable1.subscribe((x) => console.log(`observable1 is: ${x}`));
+    var subscription2 = observable2.subscribe((x) => console.log(`observable2 is: ${x}`));
+    subscription1.add(subscription2);
+
+    setTimeout(() => {
+        subscription1.unsubscribe();
+    }, 1000);
+})();
