@@ -71,3 +71,16 @@ var Rx = require('rxjs/Rx');
         subscription1.unsubscribe();
     }, 1000);
 })();
+
+(function showSubject(){
+    var subject = new Rx.Subject();
+    subject.subscribe({
+        next: (x) => console.log(`Do something A with ${x}`)
+    });
+    subject.subscribe({
+        next: (x) => console.log(`Do something B with ${x}`)
+    });
+
+    var observable = Rx.Observable.from([3,56,7]);
+    observable.subscribe(subject);
+})();
