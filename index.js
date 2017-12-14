@@ -55,12 +55,14 @@ var Rx = require('rxjs/Rx');
 })();
 
 (function showDisposableObservableExecution() {
+    console.log('=> showDisposableObservableExecution');
     var observable = Rx.Observable.interval(400);
     var subscription = observable.subscribe(x => console.log(`observable ${x}`));
     setTimeout(() => {subscription.unsubscribe()}, 2000);
 })();
 
 (function showChildSubscription(){
+    console.log('=> showChildSubscription');
     var observable1 = Rx.Observable.interval(400);
     var observable2 = Rx.Observable.interval(300);
     var subscription1 = observable1.subscribe((x) => console.log(`observable1 is: ${x}`));
@@ -73,6 +75,7 @@ var Rx = require('rxjs/Rx');
 })();
 
 (function showSubject(){
+    console.log('=> showSubject');
     var subject = new Rx.Subject();
     subject.subscribe({
         next: (x) => console.log(`Do something A with ${x}`)
@@ -83,4 +86,96 @@ var Rx = require('rxjs/Rx');
 
     var observable = Rx.Observable.from([3,56,7]);
     observable.subscribe(subject);
+})();
+
+(function showMulticastedObservable(){
+    console.log('=> showMulticastedObservable');
+    var source = Rx.Observable.from([1, 2, 3]);
+    var subject = new Rx.Subject();
+    var multicasted = source.multicast(subject);
+
+    multicasted.subscribe({
+        next: (x) => console.log(`Multicast A with ${x}`)
+    });
+    multicasted.subscribe({
+        next: (x) => console.log(`Multicast B with ${x}`)
+    });
+
+    multicasted.connect();
+})();
+
+(function showReferenceCounting(){
+    console.log('=> showReferenceCounting');
+
+    var source = Rx.Observable.interval(100);
+    var subject = new Rx.Subject();
+    var multicasted = source.multicast(subject);
+    var subscription1, subscription2, subscriptionConnect;
+
+    subscription1 = multicasted.subscribe({
+        next: (v) => console.log('observerA: ' + v)
+    });
+
+    subscriptionConnect = multicasted.connect();
+
+    setTimeout(() => {
+        subscription2 = multicasted.subscribe({
+            next: (v) => console.log('observerB:' + v)
+        });
+    }, 600);
+
+    setTimeout(() => {
+        subscription1.unsubscribe();
+    }, 1200);
+
+    setTimeout(() => {
+        subscription2.unsubscribe();
+        subscriptionConnect.unsubscribe();
+    }, 2000);
+})();
+
+(function showReferenceCountingWithRefCount(){
+    console.log('=> showReferenceCountingWithRefCount');
+
+    var source = Rx.Observable.interval(500);
+    var subject = new Rx.Subject();
+    var refCounted = source.multicast(subject).refCount();
+    var subscription1, subscription2, subscriptionConnect;
+    
+    console.log('observerA subscribed');
+    subscription1 = refCounted.subscribe({
+      next: (v) => console.log('observerA count: ' + v)
+    });
+    
+    setTimeout(() => {
+      console.log('observerB subscribed');
+      subscription2 = refCounted.subscribe({
+        next: (v) => console.log('observerB count: ' + v)
+      });
+    }, 600);
+    
+    setTimeout(() => {
+      console.log('observerA unsubscribed');
+      subscription1.unsubscribe();
+    }, 1200);
+    
+    setTimeout(() => {
+      console.log('observerB unsubscribed');
+      subscription2.unsubscribe();
+    }, 2000);
+})();
+
+(function showConcatExample() {
+    console.log('=> showConcatAllExample');
+    var timer = Rx.Observable.interval(1000).take(4);
+    var sequence = Rx.Observable.range(1, 10);
+    var result = timer.concat(sequence);
+    result.subscribe(x => console.log(x));
+
+    var timer1 = Rx.Observable.interval(1000).take(10);
+    var timer2 = Rx.Observable.interval(2000).take(6);
+    var timer3 = Rx.Observable.interval(500).take(10);
+    var result = timer1.concat(timer2, timer3);
+    result.subscribe(x => console.log(x));
+
 })();
