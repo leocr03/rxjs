@@ -63,3 +63,10 @@ var Rx = require('rxjs/Rx');
     () => console.log("Completed"));
    
 })();
+
+(function showThrottle(){
+    console.log('=> showThrottle');
+    const source = Rx.Observable.interval(500);
+    const example = source.throttle(val => Rx.Observable.interval(2000));
+    const subscribe = example.subscribe(val => console.log("throttle: " + val));
+})();
